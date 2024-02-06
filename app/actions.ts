@@ -1,24 +1,33 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import { Feature } from "geojson";
 
-const inter = Inter({ subsets: ["latin"] });
+const rootUrl = "http://localhost:3000";
 
-export const metadata: Metadata = {
-  title: "Raxalle Construction Finder",
-  description: "Construction Finder App",
-};
+export async function getAll(): Promise<Feature[]> {
+  const res = await fetch(`${rootUrl}/api/constructions/all`);
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>
-        <main className="container mx-auto">{children}</main>
-      </body>
-    </html>
-  );
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
+}
+
+export async function getFiltered(key?: string): Promise<Feature[]> {
+  const res = await fetch(`${rootUrl}/api/constructions/filter?key=${key}`);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
+}
+
+export async function getSingle(id?: string): Promise<Feature> {
+  const res = await fetch(`${rootUrl}/api/constructions/get?id=${id}`);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
 }

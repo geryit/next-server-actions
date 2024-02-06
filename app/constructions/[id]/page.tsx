@@ -1,25 +1,12 @@
 import { notFound } from "next/navigation";
-import { database } from "@/lib/Database";
-import { Feature } from "geojson";
-
-const rootUrl = "http://localhost:3000";
-
-async function getData(id?: string): Promise<Feature> {
-  const res = await fetch(`${rootUrl}/api/constructions/get?id=${id}`);
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-
-  return res.json();
-}
+import { getSingle } from "@/app/actions";
 
 export default async function ConstructionPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const construction = await getData(params.id);
+  const construction = await getSingle(params.id);
 
   if (!construction) {
     return notFound();

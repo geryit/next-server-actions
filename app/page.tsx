@@ -2,29 +2,7 @@ import { Button } from "@/lib/components/Button";
 import { TextInput } from "@/lib/components/TextInput";
 import { redirect } from "next/navigation";
 import Construction from "@/lib/components/Construction";
-import { Feature } from "geojson";
-
-const rootUrl = "http://localhost:3000";
-
-async function getAllData(key?: string): Promise<Feature[]> {
-  const res = await fetch(`${rootUrl}/api/constructions/all`);
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-
-  return res.json();
-}
-
-async function getData(key?: string): Promise<Feature[]> {
-  const res = await fetch(`${rootUrl}/api/constructions/filter?key=${key}`);
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-
-  return res.json();
-}
+import { getAll, getFiltered } from "@/app/actions";
 
 let constructions = [];
 
@@ -34,9 +12,9 @@ export default async function Home({
   searchParams: { key?: string };
 }) {
   if (searchParams.key) {
-    constructions = await getData(searchParams.key);
+    constructions = await getFiltered(searchParams.key);
   } else {
-    constructions = await getAllData();
+    constructions = await getAll();
   }
 
   const search = async (formData: FormData) => {
