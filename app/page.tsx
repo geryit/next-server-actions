@@ -3,13 +3,33 @@ import { Button } from "@/lib/components/Button";
 import { TextInput } from "@/lib/components/TextInput";
 import { redirect } from "next/navigation";
 import Construction from "@/lib/components/Construction";
+import { Feature } from "geojson";
+
+const rootUrl = "http://localhost:3000";
+
+let url = `${rootUrl}/api/constructions/all`;
+async function getData(key?: string): Promise<Feature[]> {
+  if (key) {
+    url = `${rootUrl}/api/constructions/filter?key=${key}`;
+  }
+
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
+}
 
 export default async function Home({
   searchParams,
 }: {
   searchParams: { key?: string };
 }) {
-  const constructions = await database.findConstructions(searchParams.key);
+  const constructions = await getData(searchParams.key);
+
+  console.log({ constructions });
 
   const search = async (formData: FormData) => {
     "use server";
