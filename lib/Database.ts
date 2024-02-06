@@ -10,7 +10,7 @@ class Database {
     return parsed.features;
   }
 
-  async findConstructions(key?: string) {
+  async findConstructions(key?: string | null) {
     const constructions = await this.listConstructions();
 
     if (!key) return constructions;
@@ -25,7 +25,7 @@ class Database {
     });
   }
 
-  async findConstruction(id: string) {
+  async findConstruction(id: string | null) {
     const constructions = await this.listConstructions();
 
     return constructions.find((construction: any) => {
