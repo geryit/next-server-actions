@@ -1,12 +1,28 @@
 import fs from "fs";
+import { Feature } from "geojson";
 
 class Database {
-  async listConstructions() {
+  async listConstructions(): Promise<Feature[]> {
     const geojson = fs.readFileSync("./data/constructions.geojson", {
       encoding: "utf-8",
     });
     const parsed = JSON.parse(geojson);
     return parsed.features;
+  }
+
+  async findConstructions(key?: string) {
+    const constructions = await this.listConstructions();
+
+    if (!key) return constructions;
+    return constructions.filter((feature) => {
+      if (!feature.properties) return [];
+      return (
+        feature.properties["name"]?.toLowerCase().includes(key.toLowerCase()) ||
+        feature.properties["addr:street"]
+          ?.toLowerCase()
+          .includes(key.toLowerCase())
+      );
+    });
   }
 
   async findConstruction(id: string) {

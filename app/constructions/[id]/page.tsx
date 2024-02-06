@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { database } from "../../../lib/Database";
+import { database } from "@/lib/Database";
 
 export default async function ConstructionPage({
   params,
@@ -12,8 +12,10 @@ export default async function ConstructionPage({
     return notFound();
   }
 
+  if (!construction.properties) return null;
+
   return (
-    <div>
+    <div className="max-w-lg m-auto p-8">
       <h2 className="text-xl">
         {construction.properties["name"] ||
           construction.properties["addr:street"] ||

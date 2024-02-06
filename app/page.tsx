@@ -1,35 +1,43 @@
-import Link from "next/link";
-import { database } from "../lib/Database";
-import { Button } from "../lib/components/Button";
-import { TextInput } from "../lib/components/TextInput";
+import { database } from "@/lib/Database";
+import { Button } from "@/lib/components/Button";
+import { TextInput } from "@/lib/components/TextInput";
+import { redirect } from "next/navigation";
+import Construction from "@/lib/components/Construction";
 
-export default async function Home() {
-  const constructions = await database.listConstructions();
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { key?: string };
+}) {
+  const constructions = await database.findConstructions(searchParams.key);
+
+  const search = async (formData: FormData) => {
+    "use server";
+
+    const key = formData.get("key") as string;
+
+    if (key) {
+      redirect(`?key=${encodeURIComponent(key)}`);
+    }
+    redirect(`/`);
+  };
+
   return (
     <>
       <div className="flex justify-center py-4">
-        <TextInput />
-        <Button type="submit">search</Button>
-        {/* TODO how to make this work */}
+        <form action={search} className="flex gap-2">
+          <TextInput
+            name="key"
+            placeholder="Search a Construction"
+            defaultValue={searchParams.key}
+          />
+          <Button type="submit">Search</Button>
+        </form>
       </div>
-      <div className="flex flex-col gap-2">
-        {constructions.map((feature: any) => (
-          <div key={feature.properties["@id"]} className="border p-2">
-            <h2>
-              {feature.properties["name"] ||
-                feature.properties["addr:street"] ||
-                feature.properties["@id"]}
-            </h2>
-            <Link
-              href={`/constructions/${feature.properties["@id"].replace(
-                "way/",
-                ""
-              )}`}
-              prefetch={false}
-            >
-              view site details
-            </Link>
-          </div>
+      <div className="flex flex-col gap-2 max-w-lg m-auto">
+        {constructions.length === 0 && <p>No constructions found</p>}
+        {constructions.map((feature) => (
+          <Construction feature={feature} key={feature.properties?.["@id"]} />
         ))}
       </div>
     </>

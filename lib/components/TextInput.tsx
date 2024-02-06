@@ -1,7 +1,9 @@
-import { ComponentProps, PropsWithChildren } from "react";
+import { ComponentProps, memo, PropsWithChildren } from "react";
 
 type Props = ComponentProps<"input">;
 
-export function TextInput({ ...props }: PropsWithChildren<Props>) {
-  return <input type="text" {...props} className="border" />;
-}
+export const _TextInput = ({ ...props }: PropsWithChildren<Props>) => {
+  return <input type="text" {...props} className="border p-2 rounded" />;
+};
+
+export const TextInput = memo(_TextInput);
