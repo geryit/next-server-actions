@@ -1,4 +1,3 @@
-import { database } from "@/lib/Database";
 import { Button } from "@/lib/components/Button";
 import { TextInput } from "@/lib/components/TextInput";
 import { redirect } from "next/navigation";
@@ -7,13 +6,8 @@ import { Feature } from "geojson";
 
 const rootUrl = "http://localhost:3000";
 
-let url = `${rootUrl}/api/constructions/all`;
-async function getData(key?: string): Promise<Feature[]> {
-  if (key) {
-    url = `${rootUrl}/api/constructions/filter?key=${key}`;
-  }
-
-  const res = await fetch(url);
+async function getAllData(key?: string): Promise<Feature[]> {
+  const res = await fetch(`${rootUrl}/api/constructions/all`);
 
   if (!res.ok) {
     throw new Error("Failed to fetch data");
@@ -22,14 +16,28 @@ async function getData(key?: string): Promise<Feature[]> {
   return res.json();
 }
 
+async function getData(key?: string): Promise<Feature[]> {
+  const res = await fetch(`${rootUrl}/api/constructions/filter?key=${key}`);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
+}
+
+let constructions = [];
+
 export default async function Home({
   searchParams,
 }: {
   searchParams: { key?: string };
 }) {
-  const constructions = await getData(searchParams.key);
-
-  console.log({ constructions });
+  if (searchParams.key) {
+    constructions = await getData(searchParams.key);
+  } else {
+    constructions = await getAllData();
+  }
 
   const search = async (formData: FormData) => {
     "use server";
