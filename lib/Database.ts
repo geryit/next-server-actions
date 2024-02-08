@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 import { Feature } from "geojson";
 
 class Database {
@@ -15,9 +16,12 @@ class Database {
   }
 
   async listConstructions(): Promise<Feature[]> {
-    const geojson = fs.readFileSync("./data/constructions.geojson", {
-      encoding: "utf-8",
-    });
+    const geojson = fs.readFileSync(
+      `${path.join(process.cwd(), "data")}/constructions.geojson`,
+      {
+        encoding: "utf-8",
+      },
+    );
     const parsed = JSON.parse(geojson);
     return parsed.features.filter(
       (feature: Feature) => feature.properties?.["addr:street"],
